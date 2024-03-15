@@ -1,0 +1,36 @@
+version: '3'
+
+tasks:
+  create:
+    cmds:
+      - echo "if process stops here the folder data/ubuntu already exist, please aware that this function is for an initial setup only"
+      - mkdir data/ubuntu 
+      - echo "stop and remove running container in case it is rununing" 
+      - echo "start container"
+      - docker stop $(docker compose ps -aq) || true
+      - docker rm $(docker compose ps -aq) || true
+      - docker compose down
+      - docker compose build
+      - echo "wait for 2 seconds"; sleep 2
+      - echo "start container without mounting home folder"
+      - sed -i 's/^      - \.\/data\/ubuntu:\/home\/ubuntu/#      - \.\/data\/ubuntu:\/home\/ubuntu/' docker-compose.yml
+      - docker compose up -d service-dev-ontoexplorer
+      - echo "Ermittle Container ID"
+      - echo "wait for 10 seconds"; sleep 10;
+      - echo "copy homefolder from inside container to ./data/"
+      - bash -c 'docker cp $(docker compose ps -q):/home/ubuntu/ data/'
+      - echo "copy first-install script that has to be run after the first login" 
+      - cp first-install.sh data/ubuntu/Apps
+      - chmod a+x data/ubuntu/Apps/first-install.sh
+      - echo "start container with mounted home folder"
+      - sed -i 's/^#      - \.\/data\/ubuntu:\/home\/ubuntu/      - \.\/data\/ubuntu:\/home\/ubuntu/' docker-compose.yml
+      - docker compose up -d service-dev-ontoexplorer
+      - echo "creation done."
+
+  start:
+    cmds:
+      - docker compose up &
+  stop:
+    cmds:
+      - docker compose stop &
+

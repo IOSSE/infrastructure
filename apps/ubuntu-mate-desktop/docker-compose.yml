@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  service-dev-ontoexplorer:
+    build: ../../docker/ubuntu-mate-desktop-basic
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/ubuntu:/home/ubuntu
+    environment:
+      - PASS=lo7UNgaj
+    ports:
+      - 4389:3389
+      - 4022:22
+
