@@ -9,7 +9,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - ./data/ubuntu:/home/ubuntu
     environment:
-      - PASS=lo7UNgaj
+      - PASS=${PASSWORD}
     ports:
       - 4389:3389
       - 4022:22
