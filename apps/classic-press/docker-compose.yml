@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  service-classic-press:
+#    restart: always
+    build: ../../docker/zip-website
+    ports:
+    - 8080:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/html:/var/www/html
+    environment:
+      - REPOSITORY=https://www.classicpress.net/latest.zip
+      - BASEDIR=html
+      - REPOPATH=first-level
+      - USERID=1000
+
+    depends_on:
+      - service-db-classic-press
+    networks:
+      - classic-press
+
+  service-db-classic-press:
+    image: mariadb
+#    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./data/mariadb:/var/lib/mysql
+    networks:
+      - classic-press
+
+networks:
+  classic-press:
+
+
+
